@@ -43,38 +43,57 @@ public class LinkedList<T> implements Iterable<T> {
 	
 	//Variables (attributes)
 		//Head
+	Node<T> head;
 		//Tail
+	Node<T> tail;
 		//Size (not required)
+	int size;
 		//Critical Section
- 
+	Lock critical; 
+
 	//Constructor
     public LinkedList() {
 		//Set head and tail to null
+	head = null;
+	tail = null;
 		//Set size to zero
+	size = 0;
 		//Create new instance for the critical section
+	critical = new ReentrantLock();
     }
 
 	//Returns the size of the list
     public int size() {
-        return 0; //either iterate through all the list and count
+        return size; //either iterate through all the list and count
 					//or create an attribute that stores the size and changes
 					//every time we add or remove a node
     }
 	
 	//Checks if the list is empty
 	public boolean isEmpty() {
+		critical.lock();
+		try {
+			return (head == null || size == 0); // list is empty or there is no head (equal definitions)
+		} finally {
+			critical.unlock();
+		}
         return true; //size == 0
     }
 	
 	//Deletes all the nodes in the list
 	public void clear() {
-		//just set the head and tail to null (the garbage collector takes care of the rest)
-			//cpp developers: be careful, you have to destroy them first
-		
+		critical.lock(); //just set the head and tail to null (the garbage collector takes care of the rest)
+		try {
+			head = null;
+			tail = null;
+			size = 0;
+		} finally {	//cpp developers: be careful, you have to destroy them first
+			critical.unlock();
+		}
 		//What if the merge sort is running now in a thread
 			//I should not be able to delete the nodes (and vice versa)
 			//Thus run this and everything else in a critical section
-    }
+    	}
 	
 	//Adds a new node to the list at the end (tail)
     public LinkedList<T> append(T t) {
