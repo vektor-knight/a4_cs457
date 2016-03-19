@@ -77,7 +77,7 @@ public class LinkedList<T> implements Iterable<T> {
 		} finally {
 			critical.unlock();
 		}
-        return true; //size == 0
+        // Cano temove this. Captured by the disjunction above. return true; //size == 0
     }
 	
 	//Deletes all the nodes in the list
