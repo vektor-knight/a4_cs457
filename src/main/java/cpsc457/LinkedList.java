@@ -117,7 +117,18 @@ public class LinkedList<T> implements Iterable<T> {
 
 	//Gets a node's value at a specific index
     public T get(int index) {
-		return null;
+		Node<T> current = head;
+		if (index >= size || index < 0) {
+			return null;
+		}
+
+		for (int i = 0; i < index; i++) {
+			current = current.next;
+		}
+		return current.data;
+
+
+//		return null;
 		//Iterate through the list
 			//Create a new pointer that starts at the head
 			//Keeps moving forward (pt = pt.next) for index times
