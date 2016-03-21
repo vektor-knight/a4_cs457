@@ -97,6 +97,15 @@ public class LinkedList<T> implements Iterable<T> {
 	
 	//Adds a new node to the list at the end (tail)
     public LinkedList<T> append(T t) {
+		critical.lock();
+		Node<T> node = new Node<>(t);
+		if (size == 0) {
+			head = node;
+			tail = node;
+		}
+		size++;
+		
+
         return this;
 		//Check if it is empty 
 			//head = tail = t
