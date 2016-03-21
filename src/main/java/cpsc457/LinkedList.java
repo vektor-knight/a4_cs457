@@ -137,9 +137,33 @@ public class LinkedList<T> implements Iterable<T> {
 		//Make sure not to exceed the size of the list (else return null)
     }
 	
-	@Override
+	// does it need "ForEachRemaining"?
+    @Override
     public Iterator<T> iterator() {
-		return null;
+	       return new Iterator<T>(){
+            private Node<T> current = head;
+
+            @Override
+            public T next(){
+                T data = current.data;
+                current = current.next;
+                return data;
+            }
+
+            @Override
+            public boolean hasNext(){
+            	if (head == null) return false;
+                if (current.next == null) return false;
+                else return true;
+            }
+
+
+            @Override
+            public void remove(){
+                throw new UnsupportedOperationException();
+            }
+
+          };
     }
 	
 	//The next two functions, are being called by the static functions at the top of this page
