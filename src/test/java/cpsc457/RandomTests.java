@@ -26,6 +26,7 @@ public class RandomTests {
         long end = System.currentTimeMillis();
 
         System.err.println();
+		System.err.println("Testing big random list");
         System.err.println("Processors: "+Runtime.getRuntime().availableProcessors());
         System.err.println(end - start + " ms");
         System.err.println();
@@ -124,6 +125,192 @@ public class RandomTests {
         buf.append("=================================================================================================\n");
 
         System.out.println(buf.toString());
+    }
+
+    @Test
+    public void test_serial_1e5() throws Exception {
+        Random r = new Random();
+        LinkedList<Integer> list = new LinkedList<Integer>();
+
+        for(int i=0; i<1e5; i++) {
+            list.append(r.nextInt());
+        }
+
+        long start = System.currentTimeMillis();
+        LinkedList.sort(list);
+        long end = System.currentTimeMillis();
+
+        System.err.println();
+		System.err.println("Testing serial sort N = 1e5");
+        System.err.println("Processors: "+Runtime.getRuntime().availableProcessors());
+        System.err.println(end - start + " ms");
+        System.err.println();
+
+        int i = 0;
+        Integer prev = Integer.MIN_VALUE;
+	
+	// fyi: this style of for loop use the result of getIterator()
+	//   hence the initial NullPointerException
+        for(Integer num : list) { 
+            assertTrue(num + " found before " + prev + " at index " + i, num >= prev);
+            prev = num;
+            i++;
+        }
+    }
+
+    @Test
+    public void test_serial_2e5() throws Exception {
+        Random r = new Random();
+        LinkedList<Integer> list = new LinkedList<Integer>();
+
+        for(int i=0; i<2e5; i++) {
+            list.append(r.nextInt());
+        }
+
+        long start = System.currentTimeMillis();
+        LinkedList.sort(list);
+        long end = System.currentTimeMillis();
+
+        System.err.println();
+		System.err.println("Testing serial sort N = 2e5");
+        System.err.println("Processors: "+Runtime.getRuntime().availableProcessors());
+        System.err.println(end - start + " ms");
+        System.err.println();
+
+        int i = 0;
+        Integer prev = Integer.MIN_VALUE;
+	
+	// fyi: this style of for loop use the result of getIterator()
+	//   hence the initial NullPointerException
+        for(Integer num : list) { 
+            assertTrue(num + " found before " + prev + " at index " + i, num >= prev);
+            prev = num;
+            i++;
+        }
+    }
+
+    @Test
+    public void test_serial_4e5() throws Exception {
+        Random r = new Random();
+        LinkedList<Integer> list = new LinkedList<Integer>();
+
+        for(int i=0; i<4e5; i++) {
+            list.append(r.nextInt());
+        }
+
+        long start = System.currentTimeMillis();
+        LinkedList.sort(list);
+        long end = System.currentTimeMillis();
+
+        System.err.println();
+		System.err.println("Testing serial sort N = 4e5");
+        System.err.println("Processors: "+Runtime.getRuntime().availableProcessors());
+        System.err.println(end - start + " ms");
+        System.err.println();
+
+        int i = 0;
+        Integer prev = Integer.MIN_VALUE;
+	
+	// fyi: this style of for loop use the result of getIterator()
+	//   hence the initial NullPointerException
+        for(Integer num : list) { 
+            assertTrue(num + " found before " + prev + " at index " + i, num >= prev);
+            prev = num;
+            i++;
+        }
+    }
+
+    @Test
+    public void test_serial_8e5() throws Exception {
+        Random r = new Random();
+        LinkedList<Integer> list = new LinkedList<Integer>();
+
+        for(int i=0; i<8e5; i++) {
+            list.append(r.nextInt());
+        }
+
+        long start = System.currentTimeMillis();
+        LinkedList.sort(list);
+        long end = System.currentTimeMillis();
+
+        System.err.println();
+		System.err.println("Testing serial sort N = 8e5");
+        System.err.println("Processors: "+Runtime.getRuntime().availableProcessors());
+        System.err.println(end - start + " ms");
+        System.err.println();
+
+        int i = 0;
+        Integer prev = Integer.MIN_VALUE;
+	
+	// fyi: this style of for loop use the result of getIterator()
+	//   hence the initial NullPointerException
+        for(Integer num : list) { 
+            assertTrue(num + " found before " + prev + " at index " + i, num >= prev);
+            prev = num;
+            i++;
+        }
+    }
+
+    @Test
+    public void test_serial_16e5() throws Exception {
+        Random r = new Random();
+        LinkedList<Integer> list = new LinkedList<Integer>();
+
+        for(int i=0; i<16e5; i++) {
+            list.append(r.nextInt());
+        }
+
+        long start = System.currentTimeMillis();
+        LinkedList.sort(list);
+        long end = System.currentTimeMillis();
+
+        System.err.println();
+		System.err.println("Testing serial sort N = 16e5");
+        System.err.println("Processors: "+Runtime.getRuntime().availableProcessors());
+        System.err.println(end - start + " ms");
+        System.err.println();
+
+        int i = 0;
+        Integer prev = Integer.MIN_VALUE;
+	
+	// fyi: this style of for loop use the result of getIterator()
+	//   hence the initial NullPointerException
+        for(Integer num : list) { 
+            assertTrue(num + " found before " + prev + " at index " + i, num >= prev);
+            prev = num;
+            i++;
+        }
+    }
+
+    @Test
+    public void test_para_1e5() throws Exception {
+        Random r = new Random();
+        LinkedList<Integer> list = new LinkedList<Integer>();
+
+        for(int i=0; i<1e5; i++) {
+            list.append(r.nextInt());
+        }
+
+        long start = System.currentTimeMillis();
+        LinkedList.par_sort(list);
+        long end = System.currentTimeMillis();
+
+        System.err.println();
+		System.err.println("Testing parallel sort N = 1e5");
+        System.err.println("Processors: "+Runtime.getRuntime().availableProcessors());
+        System.err.println(end - start + " ms");
+        System.err.println();
+
+        int i = 0;
+        Integer prev = Integer.MIN_VALUE;
+	
+	// fyi: this style of for loop use the result of getIterator()
+	//   hence the initial NullPointerException
+        for(Integer num : list) { 
+            assertTrue(num + " found before " + prev + " at index " + i, num >= prev);
+            prev = num;
+            i++;
+        }
     }
 
 

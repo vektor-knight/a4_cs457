@@ -97,16 +97,14 @@ public class LinkedList<T> implements Iterable<T> {
 			//cpp developers: be careful, you have to destroy them first
         critical.lock();
         try {
-            head = null;
-            tail = null;
+            head = tail = null;
             size = 0;
         } finally {
-            critical.unlock();
-        }
-		
 		//What if the merge sort is running now in a thread
 			//I should not be able to delete the nodes (and vice versa)
 			//Thus run this and everything else in a critical section
+            critical.unlock();
+        }
     }
 	
 	//Adds a new node to the list at the end (tail)
@@ -222,7 +220,8 @@ public class LinkedList<T> implements Iterable<T> {
     private void par_sort(Comparator<T> comp) {
 		critical.lock();
 		try {
-			new MergeSort<T>(comp).parallel_sort(this); //Run this within the critical section (as discussed before)
+				//Run this within the critical section (as discussed before)
+			new MergeSort<T>(comp).parallel_sort(this); 
 		} finally {
             critical.unlock();
         }
@@ -236,7 +235,7 @@ public class LinkedList<T> implements Iterable<T> {
 		ExecutorService threads;
             //Depth limit
 		int depthLimit;
-        int poolSize = 16;
+        int poolSize = 4;		// Change this for tests
     
         //Comparison function
         final Comparator<T> comp;
@@ -244,7 +243,7 @@ public class LinkedList<T> implements Iterable<T> {
         //Constructor
         public MergeSort(Comparator<T> comp) {
             threads = Executors.newFixedThreadPool(poolSize);
-            depthLimit = poolSize/2;
+            depthLimit = poolSize/2;	// Assume mergeSort is log base 2
             this.comp = comp;
         }
 
@@ -256,13 +255,13 @@ public class LinkedList<T> implements Iterable<T> {
 		//attributes (head and tail pointers)
 		
 		public void sort(LinkedList<T> list) {
-			Node<T> head = msort(list.head);
+			Node<T> head = mergeSort(list.head);
             list.head = head;
 		}
 
 		public void parallel_sort(LinkedList<T> list) {
 			int maxDepth= (int) (Math.log(poolSize)/Math.log(2));
-			Node<T> head = parallel_msort(list.head, maxDepth);				
+			Node<T> head = parallel_mergeSort(list.head, maxDepth);				
             list.head = head;
 		}
 
@@ -271,18 +270,52 @@ public class LinkedList<T> implements Iterable<T> {
 		//# Steps #
 		//#########
 		
-		//The main merge sort function (parrallel_msort and msort)
+		//The main merge sort function (parrallel_mergeSort and mergeSort)
 			//Split the list to two parts
 			//Merge sort each part
 			//Merge the two sorted parts together
+	
+		public Node<T> parallel_mergeSort(Node<T> list, int maxDepth) {
+			// Base Case: list is already sorted.			
+			if(maxDepth==0||list==null || list.next==null) {
+				return list;
+			}           
+            
+            //Split the list to two parts
+            Pair<Node<T>,Node<T>> pair = split(list);
+            Node<T> head1 = pair.fst(); Node<T> head2 = pair.snd();
+                        
+            //Merge sort each part
+            Future<Node<T>> future1 = threads.submit(new Callable() {
+                public Node<T> call() throws Exception {
+                    return parallel_mergeSort(head1, maxDepth-1);
+                }
+            });
+            
+            // Merge sort each part
+            Future<Node<T>> future2 = threads.submit(new Callable() {
+                public Node<T> call() throws Exception {
+                    return parallel_mergeSort(head2, maxDepth-1);
+                }
+            });
+           
+			Node<T> list1=null;
+			Node<T> list2=null;
+            try {
+               list1 = future1.get();
+               list2 = future2.get();
+            } catch (Exception e) {
+				System.out.println(e);
+			}
 
-		// sequential merge sort
-		public Node<T> msort(Node<T> list)
-		{
-            // if the list has only one element or no elements
-            // then it is already sorted
-            if(list==null || list.next==null)
-            {
+            //Merge the two sorted parts together
+            Node<T> sorted = merge(list1,list2);
+            
+            return sorted;
+		}
+
+		public Node<T> mergeSort(Node<T> list) {
+            if(list==null || list.next==null){
                 return list;
             }
             
@@ -291,98 +324,36 @@ public class LinkedList<T> implements Iterable<T> {
             Node<T> head1 = pair.fst();
             Node<T> head2 = pair.snd();
             
-            /* DEBUG */
-            //System.out.println("pair: " + head1.value + " " + head2.value);
             
             //Merge sort each part
-            Node<T> list1 = msort(head1);
-            Node<T> list2 = msort(head2);
+            Node<T> list1 = mergeSort(head1);
+            Node<T> list2 = mergeSort(head2);
             
             //Merge the two sorted parts together
-            Node<T> merged = merge(list1,list2);
+            Node<T> sorted = merge(list1,list2);
             
-            return merged;
-		}
-		
-		// parallel merge sort
-		public Node<T> parallel_msort(Node<T> list, int maxDepth)
-		//public LinkedList<T> parallel_msort(LinkedList<T> list)
-		{
-			if(maxDepth==0||list==null || list.next==null)
-			{
-				return list;
-			}
-            
-            // check if threads are available
-            
-            // else -> use regular msort
-            
-            
-            //Split the list to two parts
-            Pair<Node<T>,Node<T>> pair = split(list);
-            Node<T> head1 = pair.fst();
-            Node<T> head2 = pair.snd();
-            
-
-            
-            //Merge sort each part
-            Future<Node<T>> future1 = threads.submit(new Callable()
-            {
-                public Node<T> call() throws Exception
-                {
-                    return parallel_msort(head1, maxDepth-1);
-                }
-            });
-            
-            // Merge sort each part
-            Future<Node<T>> future2 = threads.submit(new Callable()
-            {
-                public Node<T> call() throws Exception
-                {
-                    return parallel_msort(head2, maxDepth-1);
-                }
-            });
-           
-			Node<T> list1=null;
-			Node<T> list2=null;
-            try
-            {
-               list1 = future1.get();
-               list2 = future2.get();
-            }
-            catch(Exception e)
-            {
-                
-            }
-            //Merge the two sorted parts together
-            Node<T> merged = merge(list1,list2);
-            
-            return merged;
+            return sorted;
 		}
 
 		//Splitting function
 			//Run two pointers and find the middle of the a specific list
 			//Create two new lists (and break the link between them)
 			//It should return pair (the two new lists)
-        public Pair<Node<T>,Node<T>> split(Node<T> head)
-        {
+        public Pair<Node<T>,Node<T>> split(Node<T> head){
             Node<T> list1 = head;
             Node<T> list2 = head;
             
             int size = 0;
             
-            while(list2!=null)
-            {
+            while(list2!=null) {
                 list2 = list2.next;
                 size++;
             }
             
             int half = size/2;
+         	list2 = head;
             
-            list2 = head;
-            
-            for(int i=0;i<half;i++)
-            {
+            for(int i=0;i<half;i++) {
                 list2 = list2.next;
             }
             
@@ -396,26 +367,21 @@ public class LinkedList<T> implements Iterable<T> {
 		
 		//Merging function
 			//1- Keep comparing the head of the two link lists
-			//2- Move the smallest node to the new merged link list
+			//2- Move the smallest node to the new sorted link list
 			//3- Move the head on the list that lost this node
 			
 			//4- Once one of the two lists is done, append the rest of the 
-			//	 second list to the tail of the new merged link list
+			//	 second list to the tail of the new sorted link list
             
-        public Node<T> merge(Node<T> head1, Node<T> head2)
-        {      
+        public Node<T> merge(Node<T> head1, Node<T> head2) {      
             Node<T> temp = new Node(999999);
             Node<T> curr = temp;
             Node<T> sorted = curr;
             
             //1- Keep comparing the head of the two link lists
-            while(head1!=null && head2!=null)
-            {
+            while(head1!=null && head2!=null) {
                 // if head1<=head2
-                if(comp.compare(head1.value, head2.value)<0)
-                {
-                    /* DEBUG
-                    System.out.println(head1.value + "<=" + head2.value);*/
+                if(comp.compare(head1.value, head2.value) < 0) {
                     
                     sorted.next = head1;
                     head1 = head1.next;
@@ -450,11 +416,11 @@ public class LinkedList<T> implements Iterable<T> {
             return curr.next;
         }
             //1- Keep comparing the head of the two link lists
-            //2- Move the smallest node to the new merged link list
+            //2- Move the smallest node to the new sorted link list
             //3- Move the head on the list that lost this node
             
             //4- Once one of the two lists is done, append the rest of the 
-            //     second list to the tail of the new merged link list
+            //     second list to the tail of the new sorted link list
     }
 
 }
