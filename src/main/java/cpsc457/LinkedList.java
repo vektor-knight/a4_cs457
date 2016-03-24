@@ -242,7 +242,12 @@ public class LinkedList<T> implements Iterable<T> {
 				return;			
 		}
 		
-		int threadCount = 4;
+		// We changed this variable for specified
+		// thread pool sizes: {2, 4, 6, 8, 32, 64, 1028}
+		// Tried to create an iterator so that this wasn't
+		// a hardcoded value. Got a bit more complicated to
+		// try to automate this for testing.
+		int threadCount = 1024;	
 		depth = (int) Math.floor(Math.log10(threadCount) / Math.log10(2));
 
 			try {
@@ -250,12 +255,10 @@ public class LinkedList<T> implements Iterable<T> {
 				LinkedList<T> sorted = parallel_mergesort(list, depth);
 				list.head = sorted.head;
 				threadPool.shutdown();
-			} 
-			catch (InterruptedException | ExecutionException e) {
+			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 			    }
 		    }
-
 		
 		//#########
 		//# Steps #
@@ -289,9 +292,9 @@ public class LinkedList<T> implements Iterable<T> {
 				}
 			});
 
-			LinkedList<T> sortedFst = futureOne.get();
-			LinkedList<T> sortedSnd = futureTwo.get();
-			return merge(sortedFst, sortedSnd);
+			LinkedList<T> firstSortedList = futureOne.get();
+			LinkedList<T> secondSortedList = futureTwo.get();
+			return merge(firstSortedList, secondSortedList);
 		}
 		
 			public LinkedList<T> mergeSort(LinkedList<T> list) {
@@ -306,17 +309,16 @@ public class LinkedList<T> implements Iterable<T> {
 		}
 		
 		    //Splitting function
-			//Run two pointers and find the middle of the a specific list
 			//Create two new lists (and break the link between them)
 			//It should return pair (the two new lists)
 			public Pair<LinkedList<T>, LinkedList<T>> split(LinkedList<T> list) {
+				//Run two pointers and find the middle of the a specific list
 				Node<T> firstPointer = list.head;
 				Node<T> secondPointer = firstPointer.next;
 
 				if (list.head == null) {
 					return null;
 				}
-
 
 				while (secondPointer != null && secondPointer.next != null) {
 					firstPointer = firstPointer.next;
@@ -337,14 +339,14 @@ public class LinkedList<T> implements Iterable<T> {
 			
 			//4- Once one of the two lists is done, append the rest of the 
 			//	 second list to the tail of the new merged link list
-			public LinkedList<T> merge(LinkedList<T> fstList, LinkedList<T> sndList) {
+			public LinkedList<T> merge(LinkedList<T> firstList, LinkedList<T> secondList) {
 
 			Node<T> compareTemp, current, firstHead, secondHead;
 
 			compareTemp = new Node<T>(null, null);
 			current = compareTemp;
-			firstHead = fstList.head;
-			secondHead = sndList.head;
+			firstHead = firstList.head;
+			secondHead = secondList.head;
 
 			while (firstHead != null && secondHead != null) {
 				if ((comp.compare(firstHead.data, secondHead.data)) == -1) {
