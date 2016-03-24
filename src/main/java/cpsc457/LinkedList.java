@@ -159,8 +159,8 @@ public class LinkedList<T> implements Iterable<T> {
 
 
             @Override
-            public void remove(){
-                throw new UnsupportedOperationException();
+            public void remove(){ // definition of remove: get rid of last element
+                if (size > 0) tail = null; 
             }
 
           };
