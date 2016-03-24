@@ -313,6 +313,130 @@ public class RandomTests {
         }
     }
 
+    @Test
+    public void test_para_2e5() throws Exception {
+        Random r = new Random();
+        LinkedList<Integer> list = new LinkedList<Integer>();
+
+        for(int i=0; i<2e5; i++) {
+            list.append(r.nextInt());
+        }
+
+        long start = System.currentTimeMillis();
+        LinkedList.par_sort(list);
+        long end = System.currentTimeMillis();
+
+        System.err.println();
+		System.err.println("Testing parallel sort N = 2e5");
+        System.err.println("Processors: "+Runtime.getRuntime().availableProcessors());
+        System.err.println(end - start + " ms");
+        System.err.println();
+
+        int i = 0;
+        Integer prev = Integer.MIN_VALUE;
+	
+	// fyi: this style of for loop use the result of getIterator()
+	//   hence the initial NullPointerException
+        for(Integer num : list) { 
+            assertTrue(num + " found before " + prev + " at index " + i, num >= prev);
+            prev = num;
+            i++;
+        }
+    }
+
+    @Test
+    public void test_para_4e5() throws Exception {
+        Random r = new Random();
+        LinkedList<Integer> list = new LinkedList<Integer>();
+
+        for(int i=0; i<4e5; i++) {
+            list.append(r.nextInt());
+        }
+
+        long start = System.currentTimeMillis();
+        LinkedList.par_sort(list);
+        long end = System.currentTimeMillis();
+
+        System.err.println();
+		System.err.println("Testing parallel sort N = 4e5");
+        System.err.println("Processors: "+Runtime.getRuntime().availableProcessors());
+        System.err.println(end - start + " ms");
+        System.err.println();
+
+        int i = 0;
+        Integer prev = Integer.MIN_VALUE;
+	
+	// fyi: this style of for loop use the result of getIterator()
+	//   hence the initial NullPointerException
+        for(Integer num : list) { 
+            assertTrue(num + " found before " + prev + " at index " + i, num >= prev);
+            prev = num;
+            i++;
+        }
+    }
+
+    @Test
+    public void test_para_8e5() throws Exception {
+        Random r = new Random();
+        LinkedList<Integer> list = new LinkedList<Integer>();
+
+        for(int i=0; i<8e5; i++) {
+            list.append(r.nextInt());
+        }
+
+        long start = System.currentTimeMillis();
+        LinkedList.par_sort(list);
+        long end = System.currentTimeMillis();
+
+        System.err.println();
+		System.err.println("Testing parallel sort N = 8e5");
+        System.err.println("Processors: "+Runtime.getRuntime().availableProcessors());
+        System.err.println(end - start + " ms");
+        System.err.println();
+
+        int i = 0;
+        Integer prev = Integer.MIN_VALUE;
+	
+	// fyi: this style of for loop use the result of getIterator()
+	//   hence the initial NullPointerException
+        for(Integer num : list) { 
+            assertTrue(num + " found before " + prev + " at index " + i, num >= prev);
+            prev = num;
+            i++;
+        }
+    }
+
+    @Test
+    public void test_para_16e5() throws Exception {
+        Random r = new Random();
+        LinkedList<Integer> list = new LinkedList<Integer>();
+
+        for(int i=0; i<16e5; i++) {
+            list.append(r.nextInt());
+        }
+
+        long start = System.currentTimeMillis();
+        LinkedList.par_sort(list);
+        long end = System.currentTimeMillis();
+
+        System.err.println();
+		System.err.println("Testing parallel sort N = 16e5");
+        System.err.println("Processors: "+Runtime.getRuntime().availableProcessors());
+        System.err.println(end - start + " ms");
+        System.err.println();
+
+        int i = 0;
+        Integer prev = Integer.MIN_VALUE;
+	
+	// fyi: this style of for loop use the result of getIterator()
+	//   hence the initial NullPointerException
+        for(Integer num : list) { 
+            assertTrue(num + " found before " + prev + " at index " + i, num >= prev);
+            prev = num;
+            i++;
+        }
+    }
+
 
 }
 
