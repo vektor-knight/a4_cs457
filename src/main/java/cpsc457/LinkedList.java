@@ -248,7 +248,7 @@ public class LinkedList<T> implements Iterable<T> {
 		// a hardcoded value. Got a bit more complicated to
 		// try to automate this for testing.
 		int threadCount = 1024;	
-		depth = (int) Math.floor(Math.log10(threadCount) / Math.log10(2));
+		depth = (int) Math.floor(Math.log10(threadCount)/Math.log10(2));
 
 			try {
 				threadPool = Executors.newFixedThreadPool(threadCount);
@@ -268,6 +268,7 @@ public class LinkedList<T> implements Iterable<T> {
 			//Split the list to two parts
 			//Merge sort each part
 			//Merge the two sorted parts together
+			// Process for Future objects from Sajjan Sharma, Runshi Chen
 			
 			public LinkedList<T> parallel_mergesort(LinkedList<T> list, int depth)
 				throws InterruptedException, ExecutionException {
